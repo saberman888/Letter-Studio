@@ -3,8 +3,9 @@ import xml.etree.ElementTree as ET
 import os
 import conassets
 def load_configuration(filename):
-    #todo
-    pass
+    settings = ET.parse(filename)
+    root = settings.getroot()
+    return (root.find('appname').text, root.find('author').text, root.find('version').text)
 
 def save_data(conlang, zpack=0):
     xml_metdata = ET.Element("metadata")
