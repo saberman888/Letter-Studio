@@ -37,3 +37,9 @@ def delete_conlang(conlang):
     del conlang
     wx.MessageBox('Conlang has been deleted', wx.OK)
     
+    
+def edit(item):
+    prev = item
+    new = wxprompt(None, 'Edit', prev)
+    return new
+
