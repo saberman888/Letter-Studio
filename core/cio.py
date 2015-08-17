@@ -1,7 +1,7 @@
 import zipfile
 import xml.etree.ElementTree as ET
 import os
-
+import conassets
 def load_configuration(filename):
     #todo
     pass
@@ -75,8 +75,20 @@ def load_data(filename):
     dict_root = dictionary.getroot()
     dial_root = dialect.getroot()
     
+    #Get metadata
+    C = Conlang(meta_root.find('conlang').text, meta_root.find('author'), meta_root.find('family').text, meta_root.find('T_Type').text, meta_root.find('A_Type').text, meta_root.find('L_Type').text)
+    
+    #Get dictionary data
+    for word in dict_root.findall('word'):
+        W = Word(word.find('word').text, word.find('definition').text, word.find('ipa').text, word.find('pos').text, word.find('register').text, word.find('class').text, word.find('source_lang').text, word.find('source').text, word.find('notes').text)
+        W.add2list(C)
+
+    #Load all dialect data
+    for dialect in dial_root.findall('dialect'):
+        D = Dialect(dialect.find('name').text, dialect.find('description').text)
+        D.add2list(C)
         
-    #todo
-    pass
+
+    return C
         
         
