@@ -7,8 +7,10 @@ def load_configuration(filename):
     root = settings.getroot()
     return (root.find('appname').text, root.find('author').text, root.find('version').text)
 
-def save_data(conlang, zpack=0):
-    xml_metdata = ET.Element("metadata")
+
+
+def save_data(filename, conlang, zpack=0):
+    xml_metadata = ET.Element("metadata")
     xml_dictionary = ET.Element("dictionary")
     xml_dialect = ET.Element("dialects")
 
@@ -23,18 +25,17 @@ def save_data(conlang, zpack=0):
 
     mtree = ET.ElementTree(xml_metadata)
     mtree.write("metadata.xml")
-    mtree.close()
 
     #Set up dictionary
     if len(conlang.words) != 0:
             for x in conlang.words:
                 word = ET.SubElement(xml_dictionary,"word")
                 ET.SubElement(word, "word").text = x.word
-                ET.SubElement(word, "definition").text = x.definition
-                ET.SubElement(word, "ipa").text = x.ipa
-                Et.SubElement(word, "pos").text = x.pos
+                ET.SubElement(word, "definition").text = x.definition 
+                ET.SubElement(word, "pos").text = x.pos
                 ET.SubElement(word, "register").text = x.register
                 ET.SubElement(word, "class").text = x._class
+                ET.SubElement(word, "dialect").text = x.dialect
                 ET.SubElement(word, "source lang").text = x.source_lang
                 ET.SubElement(word, "source").text = x.source
                 ET.SubElement(word, "notes").text = x.notes
@@ -42,7 +43,6 @@ def save_data(conlang, zpack=0):
 
             dtree = ET.ElementTree(xml_dictionary)
             dtree.write("dictionary.xml")
-            dtree.close()
     if len(conlang.dialects) != 0:
         #Write dialects
         for x in conlang.dialects:
@@ -52,14 +52,13 @@ def save_data(conlang, zpack=0):
 
         ditree = ET.ElementTree(xml_dialect)
         ditree.write("dialects.xml")
-        ditree.close()
-    if op == 0 or op == 3:
-        with open(filename, 'w') as myconlang:
-            myconlang.write('metadata.xml')
-            myconlang.write('dictionary.xml')
-            myconlang.write('dialects.xml')
+    if zpack == 0 or zpack == 3:
+        with open(filename, 'wb') as myconlang:
+            myconlang.write("metadata.xml", r"\metadata.xml", zipfile.ZIP_DEFLATED)
+            myconlang.write("dictionary.xml", r"\dictionary.xml", zipfile.ZIP_DEFLATED)
+            myconlang.write("dialects.xml", r"\dialects.xml", zipfile.ZIP_DEFLATED)
             myconlang.close()
-            if op != 3:
+            if zpack != 3:
                 os.remove('metadata.xml')
                 os.remove('dictionary.xml')
                 os.remove('dialects.xml')
@@ -67,10 +66,10 @@ def save_data(conlang, zpack=0):
         
 
 def load_data(filename):
-    zipdata = ZipFile(filename, 'r')
-    meta = ET.parse(zipdata.open('metadata.xml', 'r'))
-    dictionary = ET.parse(zipdata.open('dictionary.xml', 'r'))
-    dialect = ET.parse(zipdata.open('dialect.xml', 'r'))
+    zipdata = zipfile.ZipFile(filename)
+    meta = ET.parse(zipdata.open('metadata.xml', 'r').read())
+    dictionary = ET.parse(zipdata.open('dictionary.xml', 'r').read())
+    dialect = ET.parse(zipdata.open('dialect.xml', 'r').read())
 
     meta_root = meta.getroot()
     dict_root = dictionary.getroot()
@@ -81,7 +80,7 @@ def load_data(filename):
     
     #Get dictionary data
     for word in dict_root.findall('word'):
-        W = Word(word.find('word').text, word.find('definition').text, word.find('ipa').text, word.find('pos').text, word.find('register').text, word.find('class').text, word.find('source_lang').text, word.find('source').text, word.find('notes').text)
+        W = Word(word.find('word').text, word.find('definition').text, word.find('ipa').text, word.find('register').text, word.find('class').text, word.find('dialect'), word.find('source_lang').text, word.find('source').text, word.find('notes').text)
         W.add2list(C)
 
     #Load all dialect data
@@ -91,5 +90,7 @@ def load_data(filename):
         
 
     return C
+        
+        
         
         
