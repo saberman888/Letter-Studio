@@ -1,6 +1,7 @@
 import zipfile
 import xml.etree.ElementTree as ET
 import os
+import tarfile
 import conassets
 def load_configuration(filename):
     settings = ET.parse(filename)
@@ -53,15 +54,15 @@ def save_data(filename, conlang, zpack=0):
         ditree = ET.ElementTree(xml_dialect)
         ditree.write("dialects.xml")
     if zpack == 0 or zpack == 3:
-        with open(filename, 'wb') as myconlang:
-            myconlang.write("metadata.xml", r"\metadata.xml", zipfile.ZIP_DEFLATED)
-            myconlang.write("dictionary.xml", r"\dictionary.xml", zipfile.ZIP_DEFLATED)
-            myconlang.write("dialects.xml", r"\dialects.xml", zipfile.ZIP_DEFLATED)
+        with zipfile.open(filename, 'w') as myconlang:
+            myconlang.write("metadata.xml")
+            myconlang.write("dictionary.xml")
+            myconlang.write("dialects.xml")
             myconlang.close()
-            if zpack != 3:
-                os.remove('metadata.xml')
-                os.remove('dictionary.xml')
-                os.remove('dialects.xml')
+        if zpack != 3:
+            os.remove('metadata.xml')
+            os.remove('dictionary.xml')
+            os.remove('dialects.xml')
                 
         
 
@@ -90,7 +91,5 @@ def load_data(filename):
         
 
     return C
-        
-        
         
         
