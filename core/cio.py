@@ -1,7 +1,10 @@
+
+        
 import zipfile
 import xml.etree.ElementTree as ET
 import os
 import conassets
+import wx
 def load_configuration(filename):
     settings = ET.parse(filename)
     root = settings.getroot()
@@ -67,9 +70,9 @@ def save_data(filename, conlang, zpack=0):
 
 def load_data(filename):
     zipdata = zipfile.ZipFile(filename, 'r')
-    meta = ET.parse(zipdata.open('metadata.xml', 'rU').read())
-    dictionary = ET.parse(zipdata.open('dictionary.xml', 'rU').read())
-    dialect = ET.parse(zipdata.open('dialect.xml', 'rU').read())
+    meta = ET.parse(zipdata.open('metadata.xml', 'r'))
+    dictionary = ET.parse(zipdata.open('dictionary.xml', 'r'))
+    dialect = ET.parse(zipdata.open('dialect.xml', 'r'))
 
     meta_root = meta.getroot()
     dict_root = dictionary.getroot()
@@ -92,3 +95,11 @@ def load_data(filename):
     return C
         
         
+def wxprompt(parent=None, message='', default_value=''):
+    dialog = wx.TextEntryDialog(parent, message, defaultValue=default_value)
+    dialog.ShowModal()
+    result = dialog.GetValue()
+    dialog.Destroy()
+    return result
+
+
