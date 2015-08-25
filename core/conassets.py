@@ -1,5 +1,6 @@
 
 
+
 class Conlang():
     def __init__(self, Name, Author, Family, T_Type, A_Type, L_Type):
         self.Name = Name
@@ -22,17 +23,19 @@ class Dialect():
 
         
 class Word():
-    def __init__(self, word, definiton, ipa, pos, register, _class, source_lang, source, notes):
+    def __init__(self, word, definition, ipa, pos, register, _class, dialect, source_lang, source, notes):
         
         self.word = word
-        self.defintion = definition
+        self.definition = definition
         self.ipa = ipa
         self.pos = pos
         self.register = register
         self._class = _class
+        self.dialect = dialect
         self.source_lang = source_lang
         self.source = source
         self.notes = notes
 
     def add2list(self, conlang):
         conlang.words.append(self)
+
