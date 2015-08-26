@@ -61,7 +61,7 @@ def save_data(filename, conlang, zpack=0):
             myconlang.write("dictionary.xml")
             myconlang.write("dialects.xml")
             myconlang.close()
-        if zpack != 3:
+        if zpack == 3:
             os.remove('metadata.xml')
             os.remove('dictionary.xml')
             os.remove('dialects.xml')
