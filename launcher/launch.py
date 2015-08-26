@@ -27,7 +27,8 @@ def main():
             print "Done!"
             print "Press enter to exit."
             i = raw_input()
-            sys.exit(0)
+            del i
+            os._exit()
 
 
 if __name__ == "__main__":
