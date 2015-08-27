@@ -56,4 +56,3 @@ class Word():
 
     def add2list(self, conlang):
         conlang.words.append(self)
-
