@@ -46,7 +46,6 @@ class Word():
         
         self.word = word
         self.definition = definition
-        self.ipa = ipa
         self.pos = pos
         self.register = register
         self._class = _class
