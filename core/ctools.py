@@ -23,6 +23,8 @@
 
 import wx
 import cio
+
+
 #Ctools.py
 
 
@@ -39,7 +41,7 @@ def delete_dialects(conlang, mode):
 
     else:
         if mode == 0:
-            wx.MessageBox("There are no dialects to delete", wx.OK)
+            wx.MessageBox(lang['NO_DIALECTS_DELETE'], wx.OK)
         return 0
 
 
@@ -52,18 +54,18 @@ def delete_words(conlang, mode):
 
     else:
         if mode == 0:
-            wx.MessageBox("There are no words to delete", wx.OK)
+            wx.MessageBox(lang['NO_WORDS_DELETE'], wx.OK)
         return 0
 
 def dump_conlang(conlang):
     delete_dialects(conlang, 1)
     delete_words(conlang, 1)
     del conlang
-    wx.MessageBox('Conlang has been deleted', wx.OK)
+    wx.MessageBox(lang['CONLANG_DELETED'], wx.OK)
     
     
 def edit(item):
     prev = item
-    new = wxprompt(None, 'Edit', prev)
+    new = wxprompt(None, lang['EDIT'], prev)
     return new
 
