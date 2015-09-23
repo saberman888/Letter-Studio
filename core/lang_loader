@@ -43,3 +43,8 @@ def load_lang_data(filename):
     EDIT = root.find("EDIT").text
     lang_data = {"EDIT":EDIT}
 
+    CLANG_DEL = root.find("CONLANG_DELETED")
+    lang_data == {"CONLANG_DELETED":CLANG_DEL}
+
+    return lang_data
+
