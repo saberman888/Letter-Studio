@@ -25,6 +25,9 @@ import xml.etree.ElementTree as ET
 import os
 import conassets
 import wx
+from lang_loader import *
+
+lang = load_lang_data('config.xml')
 def load_configuration(filename):
     settings = ET.parse(filename)
     root = settings.getroot()
