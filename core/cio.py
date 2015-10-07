@@ -21,7 +21,6 @@
 #SOFTWARE.
         
 import zipfile
-import xml.etree.ElementTree as ET
 import os
 import conassets
 import wx
@@ -35,88 +34,58 @@ def load_configuration(filename):
 
 
 
-def save_data(filename, conlang, zpack=0):
-    xml_metadata = ET.Element("metadata")
-    xml_dictionary = ET.Element("dictionary")
-    xml_dialect = ET.Element("dialects")
+def save_data(filename, conlang):
+    #Start with meta data
+    with open("metadata.data", "a") as f:
+        f.write("!#METADATA:BEGIN_BLOCK")
+        f.write("#CONLANG:%s") % conlang.Name
+        f.write("#AUTHOR:%s") % conlang.Author
+        f.write("#TTYPE:%s") 
+        f.write("!#METADATA:END_BLOCK")
+        f.close()
 
+    
+    with open("dictionary.data", "a") as f:
+        f.write("!#DICTIONARY:BEGIN_LIST")
+        for x in conlang.words:
+            #word;definition;pos;register;class;dialect;src-lang;src;notes
+            f.write("#WORD;%s;%s;%s;%s;%s;%s;%s;%s;%s") % (x.word, x.definition, x.pos, x.register, x._class, x.dialect, x.source_lang, x.source, x.notes)
+        f.write("!#DICTIONARY:END_LIST")
 
-    #Set up metadata first
-    ET.SubElement(xml_metadata, "conlang").text = conlang.Name
-    ET.SubElement(xml_metadata, "author").text = conlang.Author
-    ET.SubElement(xml_metadata, "family").text = conlang.Family
-    ET.SubElement(xml_metadata, "T_Type").text = conlang.T_Type
-    ET.SubElement(xml_metadata, "A_Type").text = conlang.A_Type
-    ET.SubElement(xml_metadata, "L_Type").text = conlang.L_Type
+        f.write("!#DIALECTS:BEGIN_LIST")
+        if len(conlang.dialects) != 0:
+            for x in conlang.dialects:
+                f.write("#DIALECT;%s;%s")% (x.Name, x.description)
+        f.write("!#DIALECYS:END_LIST")
+        f.close()
 
-    mtree = ET.ElementTree(xml_metadata)
-    mtree.write("metadata.xml")
-
-    #Set up dictionary
-    if len(conlang.words) != 0:
-            for x in conlang.words:
-                word = ET.SubElement(xml_dictionary,"word")
-                ET.SubElement(word, "word").text = x.word
-                ET.SubElement(word, "definition").text = x.definition 
-                ET.SubElement(word, "pos").text = x.pos
-                ET.SubElement(word, "register").text = x.register
-                ET.SubElement(word, "class").text = x._class
-                ET.SubElement(word, "dialect").text = x.dialect
-                ET.SubElement(word, "source lang").text = x.source_lang
-                ET.SubElement(word, "source").text = x.source
-                ET.SubElement(word, "notes").text = x.notes
-
-
-            dtree = ET.ElementTree(xml_dictionary)
-            dtree.write("dictionary.xml")
-    if len(conlang.dialects) != 0:
-        #Write dialects
-        for x in conlang.dialects:
-            dialect = ET.SubElement(xml_dialect, "dialect")
-            ET.SubElement(dialect, "name").text = x.Name
-            ET.SubElement(dialect, "description").text = x.description
-
-        ditree = ET.ElementTree(xml_dialect)
-        ditree.write("dialects.xml")
-    if zpack == 0 or zpack == 3:
         with zipfile.ZipFile(filename, "w") as myconlang:
-            myconlang.write("metadata.xml")
-            myconlang.write("dictionary.xml")
-            myconlang.write("dialects.xml")
-            myconlang.close()
-        if zpack == 3:
-            os.remove('metadata.xml')
-            os.remove('dictionary.xml')
-            os.remove('dialects.xml')
-                
-        
+            myconlang.write("metadata.data")
+            myconlang.write("dictionary.data")
+            os.remove("metadata.data")
+            os.remove("dictionary.data")
+
 
 def load_data(filename):
-    zipdata = zipfile.ZipFile(filename, 'r')
-    meta = ET.parse(zipdata.open('metadata.xml', 'r'))
-    dictionary = ET.parse(zipdata.open('dictionary.xml', 'r'))
-    dialect = ET.parse(zipdata.open('dialect.xml', 'r'))
+    ZDATA = zipfile.Zipfile(filname, 'r')
+    METADATA = open(zipdata.open('metadata.data', 'r'))
+    DICTIONARY = open(zipdata.open('dictionary.data', 'r'))
+    mode = 0 # 1 = Block mode, 2 = list mode
+    for x in METADATA.readlines():
+        if x.endswith("BEGIN_LIST") and x.beginswith("!#"):
+            mode = 1
+        if x.endswith("END_LIST") and x.beginswith("!#"):
+            mode = 0
 
-    meta_root = meta.getroot()
-    dict_root = dictionary.getroot()
-    dial_root = dialect.getroot()
-    
-    #Get metadata
-    C = Conlang(meta_root.find('conlang').text, meta_root.find('author'), meta_root.find('family').text, meta_root.find('T_Type').text, meta_root.find('A_Type').text, meta_root.find('L_Type').text)
-    
-    #Get dictionary data
-    for word in dict_root.findall('word'):
-        W = Word(word.find('word').text, word.find('definition').text, word.find('ipa').text, word.find('register').text, word.find('class').text, word.find('dialect'), word.find('source_lang').text, word.find('source').text, word.find('notes').text)
-        W.add2list(C)
+        if mode == 1:
+            
+            
+            
 
-    #Load all dialect data
-    for dialect in dial_root.findall('dialect'):
-        D = Dialect(dialect.find('name').text, dialect.find('description').text)
-        D.add2list(C)
-        
+        (conlang.T_Type,conlang.A_Typemconlang.:_Type)
+            
+            
 
-    return C
-        
         
 def wxprompt(parent=None, message='', default_value=''):
     dialog = wx.TextEntryDialog(parent, message, defaultValue=default_value)
