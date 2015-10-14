@@ -72,12 +72,17 @@ def load_data(filename):
     DICTIONARY = open(zipdata.open('dictionary.data', 'r'))
     mode = 0 # 1 = Block mode, 2 = list mode
     for x in METADATA.readlines():
-        if x.endswith("BEGIN_LIST") and x.beginswith("!#"):
+        if x.endswith("BEGIN_BLOCK") and x.beginswith("!#"):
             mode = 1
-        if x.endswith("END_LIST") and x.beginswith("!#"):
+        elif x.endswith("END_BLOCK") and x.beginswith("!#"):
             mode = 0
-
-        if mode == 1:
+        elif x.endswith("BEGIN_LIST") and x.beginswith("!#"):
+            mode = 2
+        elif x.endswith("END_LIST") and x.beginswith("!#"):
+            mode = 0
+            
+        elif mode == 1:
+            
             
             
             
