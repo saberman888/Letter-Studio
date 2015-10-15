@@ -26,11 +26,60 @@ import conassets
 import wx
 from lang_loader import *
 
-lang = load_lang_data('config.xml')
-def load_configuration(filename):
-    settings = ET.parse(filename)
-    root = settings.getroot()
-    return (root.find('appname').text, root.find('author').text, root.find('version').text)
+
+class Configuration():
+    def __init__(self, appname, author, version, language):
+        self.appname = appname
+        self.author = author
+        self.version = version
+        self.language = language
+        
+    def update(self):
+        if os.path.isfile("config.data"):
+            os.remove("config.data")
+
+        with open("config.data"):
+            f.write("#!CONFIGDATA:BEGIN_BLOCK")
+            f.write("#APPNAME:%s") % self.appname
+            f.write("#AUTHOR:%s") % self.author
+            f.write("#VERSION:%s") % self.version
+            f.write("#LANGUAGE:%s") % self.language
+            f.write("#!CONFIGDATA:END_BLOCK")
+            f.close()
+            
+    def load(self):
+        data = {}
+        mode = 0
+        with open("config.data","rb") as f:
+            for x in f.readlines():
+                if x.endswith("BEGIN_BLOCK") and x.beginswith("!#"):
+                    mode = 1
+                    
+                elif x.endswith("END_BLOCK") and x.beginswith("!#"):
+                    mode = 0
+                elif x.endswith("BEGIN_LIST") and x.beginswith("!#"):
+                    mode = 2
+                elif x.endswith("END_LIST") and x.beginswith("!#"):
+                    mode = 0
+
+                if mode == 1:
+                    if x.startswith("#!CONFIGDATA"):
+                        x2 = x.split(":")
+                        x2.split("#")
+                        data = {x2[0],x2[1]}
+
+
+        #update values
+        self.appname = data['APPNAME']
+        self.author = data['AUTHOR']
+        self.version = data['VERSION']
+        self.language = data['LANGUAGE']
+        f.close()
+        
+
+                
+            
+        
 
 
 
@@ -90,7 +139,7 @@ def load_data(filename, subfilename):
             
         elif mode == 1:
             if cmode = 1:
-                x2 = x.split(";")
+                x2 = x.split(":")
                 x2.split("#")
                 Meta[x2[0]] = x2[1]
 
