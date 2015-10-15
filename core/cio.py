@@ -183,6 +183,5 @@ def wxprompt(parent=None, message='', default_value=''):
     dialog.ShowModal()
     result = dialog.GetValue()
     dialog.Destroy()
-    return result
 
 
