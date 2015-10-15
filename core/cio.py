@@ -115,6 +115,7 @@ def save_data(filename, conlang):
             myconlang.write("dictionary.data")
             os.remove("metadata.data")
             os.remove("dictionary.data")
+           myconlang.close()
 
 
 def load_data(filename, subfilename):
