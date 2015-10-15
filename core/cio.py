@@ -40,7 +40,9 @@ def save_data(filename, conlang):
         f.write("!#METADATA:BEGIN_BLOCK")
         f.write("#CONLANG:%s") % conlang.Name
         f.write("#AUTHOR:%s") % conlang.Author
-        f.write("#TTYPE:%s") 
+        f.write("#TTYPE:%s") % conlang.T_Type
+        f.write("#ATYPE:%s") % conlang.A_Type
+        f.write("#LTYPE:%s") % conlang.L_Type
         f.write("!#METADATA:END_BLOCK")
         f.close()
 
@@ -66,14 +68,19 @@ def save_data(filename, conlang):
             os.remove("dictionary.data")
 
 
-def load_data(filename):
+def load_data(filename, subfilename):
     ZDATA = zipfile.Zipfile(filname, 'r')
-    METADATA = open(zipdata.open('metadata.data', 'r'))
-    DICTIONARY = open(zipdata.open('dictionary.data', 'r'))
-    mode = 0 # 1 = Block mode, 2 = list mode
+    METADATA = open(ZDATA.open('metadata.data', 'r'))
+    DICTIONARY = open(ZDATA.open('dictionary.data', 'r'))
+
+    mode = 0 # 1 = block mode, 2 = list mode
+    cmode = 0
+    Meta = {}
+    
     for x in METADATA.readlines():
         if x.endswith("BEGIN_BLOCK") and x.beginswith("!#"):
             mode = 1
+            
         elif x.endswith("END_BLOCK") and x.beginswith("!#"):
             mode = 0
         elif x.endswith("BEGIN_LIST") and x.beginswith("!#"):
@@ -82,13 +89,43 @@ def load_data(filename):
             mode = 0
             
         elif mode == 1:
-            
-            
-            
-            
+            if cmode = 1:
+                x2 = x.split(";")
+                x2.split("#")
+                Meta[x2[0]] = x2[1]
 
-        (conlang.T_Type,conlang.A_Typemconlang.:_Type)
+
+
+    C = Conlang(Meta['CONLANG'], Meta['AUTHOR'], Meta['TTYPE'], Meta['ATYPE'], Meta['LTYPE'])
+
+    for x in DICTIONARY.readlines():
+        if x.endswith("BEGIN_BLOCK") and x.beginswith("!#"):
+            mode = 1
             
+        elif x.endswith("END_BLOCK") and x.beginswith("!#"):
+            mode = 0
+        elif x.endswith("BEGIN_LIST") and x.beginswith("!#"):
+            mode = 2
+        elif x.endswith("END_LIST") and x.beginswith("!#"):
+            mode = 0
+
+        if mode == 1:
+            if x.startswith("!#DICTIONARY"):
+                x2 = x.split(";")
+                x2.split("#")
+                WORD = Word(x2[1],x2[2],x2[3],x2[4],x2[5],x2[6],x2[7],x2[8],x2[9])
+                WORD.add2list(C)
+                
+            elif x.startswith("!#DIALECTS"):
+                x2 = x.split(";")
+                x2.split("#")
+                DIALECT = Dialect(x2[1],x2[2])
+                DIALECY.add2list(C)
+
+
+    return C
+
+
             
 
         
