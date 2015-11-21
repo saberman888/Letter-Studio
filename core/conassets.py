@@ -42,7 +42,7 @@ class Dialect():
 
         
 class Word():
-    def __init__(self, word, definition, ipa, pos, register, _class, dialect, source_lang, source, notes):
+    def __init__(self, word, definition, ipa, pos, register, _class, dialect, source_lang, notes):
         
         self.word = word
         self.definition = definition
@@ -51,7 +51,6 @@ class Word():
         self._class = _class
         self.dialect = dialect
         self.source_lang = source_lang
-        self.source = source
         self.notes = notes
 
     def add2list(self, conlang):
