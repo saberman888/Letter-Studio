@@ -63,10 +63,10 @@ class Configuration():
                     mode = 0
 
                 if mode == 1:
-                    if x.startswith("#!CONFIGDATA"):
                         x2 = x.split(":")
                         x2.split("#")
                         data = {x2[0],x2[1]}
+			data[str(x2[0])] = x2[1]
 
 
         #update values
@@ -83,43 +83,43 @@ class Configuration():
 
 
 
-def save_data(filename, conlang):
+def save_data(filename, conlang, zip=True):
     #Start with meta data
     with open("metadata.data", "a") as f:
         f.write("!#METADATA:BEGIN_BLOCK")
-        f.write("#CONLANG:%s") % conlang.Name
-        f.write("#AUTHOR:%s") % conlang.Author
-        f.write("#TTYPE:%s") % conlang.T_Type
-        f.write("#ATYPE:%s") % conlang.A_Type
-        f.write("#LTYPE:%s") % conlang.L_Type
-        f.write("!#METADATA:END_BLOCK")
+        f.write("#CONLANG:%s\n" % conlang.Name)
+        f.write("#AUTHOR:%s\n"  % conlang.Author)
+        f.write("#TTYPE:%s\n" % conlang.T_Type)
+        f.write("#ATYPE:%s\n" % conlang.A_Type)
+        f.write("#LTYPE:%s\n" % conlang.L_Type)
+        f.write("!#METADATA:END_BLOCK\n")
         f.close()
 
     
     with open("dictionary.data", "a") as f:
-        f.write("!#DICTIONARY:BEGIN_LIST")
+        f.write("!#DICTIONARY:BEGIN_LIST\n")
         for x in conlang.words:
             #word;definition;pos;register;class;dialect;src-lang;src;notes
-            f.write("#WORD;%s;%s;%s;%s;%s;%s;%s;%s;%s") % (x.word, x.definition, x.pos, x.register, x._class, x.dialect, x.source_lang, x.source, x.notes)
-        f.write("!#DICTIONARY:END_LIST")
+            f.write("#WORD;%s;%s;%s;%s;%s;%s;%s;%s;\n" % (x.word, x.definition, x.pos, x.register, x._class, x.dialect, x.source_lang, x.notes))
+        f.write("!#DICTIONARY:END_LIST\n")
 
-        f.write("!#DIALECTS:BEGIN_LIST")
+        f.write("!#DIALECTS:BEGIN_LIST\n")
         if len(conlang.dialects) != 0:
             for x in conlang.dialects:
-                f.write("#DIALECT;%s;%s")% (x.Name, x.description)
-        f.write("!#DIALECYS:END_LIST")
+                f.write("#DIALECT;%s;%s\n" % (x.Name, x.description))
+        f.write("!#DIALECYS:END_LIST\n")
         f.close()
+	if zip == True:
+            with zipfile.ZipFile(filename, "w") as myconlang:
+                myconlang.write("metadata.data")
+                myconlang.write("dictionary.data")
+                os.remove("metadata.data")
+                os.remove("dictionary.data")
+            myconlang.close()
 
-        with zipfile.ZipFile(filename, "w") as myconlang:
-            myconlang.write("metadata.data")
-            myconlang.write("dictionary.data")
-            os.remove("metadata.data")
-            os.remove("dictionary.data")
-           myconlang.close()
 
-
-def load_data(filename, subfilename):
-    ZDATA = zipfile.Zipfile(filname, 'r')
+def load_data(filename):
+    ZDATA = zipfile.ZipFile(filename, 'r')
     METADATA = open(ZDATA.open('metadata.data', 'r'))
     DICTIONARY = open(ZDATA.open('dictionary.data', 'r'))
 
@@ -139,7 +139,7 @@ def load_data(filename, subfilename):
             mode = 0
             
         elif mode == 1:
-            if cmode = 1:
+            if cmode == 1:
                 x2 = x.split(":")
                 x2.split("#")
                 Meta[x2[0]] = x2[1]
@@ -151,7 +151,8 @@ def load_data(filename, subfilename):
     for x in DICTIONARY.readlines():
         if x.endswith("BEGIN_BLOCK") and x.beginswith("!#"):
             mode = 1
-            
+	    if x.startswith("!#DIALECTS"):
+	        cmode = 2
         elif x.endswith("END_BLOCK") and x.beginswith("!#"):
             mode = 0
         elif x.endswith("BEGIN_LIST") and x.beginswith("!#"):
@@ -160,17 +161,16 @@ def load_data(filename, subfilename):
             mode = 0
 
         if mode == 1:
-            if x.startswith("!#DICTIONARY"):
-                x2 = x.split(";")
-                x2.split("#")
-                WORD = Word(x2[1],x2[2],x2[3],x2[4],x2[5],x2[6],x2[7],x2[8],x2[9])
-                WORD.add2list(C)
+            x2 = x.split(";")
+            x2.split("#")
+            WORD = Word(x2[1],x2[2],x2[3],x2[4],x2[5],x2[6],x2[7],x2[8])
+            WORD.add2list(C)
                 
-            elif x.startswith("!#DIALECTS"):
+            if cmode == 2: #Dialect parse mode
                 x2 = x.split(";")
                 x2.split("#")
-                DIALECT = Dialect(x2[1],x2[2])
-                DIALECY.add2list(C)
+                DIALECT = Dialect[str(x2[1])] = x2[2]
+                DIALECT.add2list(C)
 
 
     return C
