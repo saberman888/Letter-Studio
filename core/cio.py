@@ -86,7 +86,7 @@ class Configuration():
 def save_data(filename, conlang, zip=True):
     #Start with meta data
     with open("metadata.data", "a") as f:
-        f.write("!#METADATA:BEGIN_BLOCK")
+        f.write("!#METADATA:BEGIN_BLOCK\n")
         f.write("#CONLANG:%s\n" % conlang.Name)
         f.write("#AUTHOR:%s\n"  % conlang.Author)
         f.write("#TTYPE:%s\n" % conlang.T_Type)
