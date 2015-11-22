@@ -19,6 +19,13 @@
 #LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+class Class():
+    def __init__(self, Name, description):
+	self.Name = Name
+	self.description = description
+
+    def Add(self, c):
+        c.classes.append(self)
 
 class Conlang():
     def __init__(self, Name, Author, Family, T_Type, A_Type, L_Type):
@@ -28,6 +35,7 @@ class Conlang():
         self.T_Type = T_Type #Typology type
         self.A_Type =A_Type #Alignment type
         self.L_Type = L_Type #Language type
+        self.classes = []
         self.dialects = []
         self.words = []
 
@@ -42,7 +50,7 @@ class Dialect():
 
         
 class Word():
-    def __init__(self, word, definition, ipa, pos, register, _class, dialect, source_lang, notes):
+    def __init__(self, word, definition,pos, register, _class, dialect, source_lang, notes):
         
         self.word = word
         self.definition = definition
