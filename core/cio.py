@@ -1,198 +1,147 @@
-#The MIT License (MIT)
+# The MIT License (MIT)
 #
-#Copyright (c) 2015 saberman888
+# Copyright (c) 2015 saberman888
 
-#Permission is hereby granted, free of charge, to any person obtaining a copy
-#of this software and associated documentation files (the "Software"), to deal
-#in the Software without restriction, including without limitation the rights
-#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#copies of the Software, and to permit persons to whom the Software is
-#furnished to do so, subject to the following conditions:
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
 #
-#The above copyright notice and this permission notice shall be included in all
-#copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
 #
-#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#SOFTWARE.
-        
-import zipfile
-import os
-import conassets
-#import wx
-#from lang_loader import *
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+from conassets import *
+from ctools import *
 
 
-class Configuration():
-    def __init__(self, appname, author, version, language):
-        self.appname = appname
-        self.author = author
-        self.version = version
-        self.language = language
-        
-    def update(self):
-        if os.path.isfile("config.data"):
-            os.remove("config.data")
+def save(filename, conlang):
+    """Saves constructed language data, parameters - filename and """
+    try:
+        # Write all artifical language data into its file
+        with open(filename, 'w') as k:
+            # Start with language's metadata
+            k.write("!METADATA_START\n")
+            k.write("\t-->!CONLANG:%s:\n".encode("utf8") % conlang.Name)
+            k.write("\t-->!AUTHOR:%s:\n".encode("utf8") % conlang.Author)
+            k.write("\t-->!AUTHOR:%s:\n".encode("utf8") % conlang.Family)
+            k.write("\t-->!Typology:%s:\n".encode("utf8") % conlang.T_Type)
+            k.write("\t-->!Alignment:%s:\n".encode("utf8") % conlang.A_Type)
+            k.write("\t-->!Language-Type:%s:\n".encode("utf8") % conlang.L_Type)
+            k.write("!METADATA_END\n")
 
-        with open("config.data"):
-            f.write("#!CONFIGDATA:BEGIN_BLOCK")
-            f.write("#APPNAME:%s" % self.appname)
-            f.write("#AUTHOR:%s" % self.author)
-            f.write("#VERSION:%s" % self.version)
-            f.write("#LANGUAGE:%s" % self.language)
-            f.write("#!CONFIGDATA:END_BLOCK")
-            f.close()
-            
-    def load(self):
-        data = {}
-        mode = 0
-        with open("config.data","rb") as f:
-            for x in f.readlines():
-                if x.endswith("BEGIN_BLOCK") and x.beginswith("!#"):
-                    mode = 1
-                    
-                elif x.endswith("END_BLOCK") and x.beginswith("!#"):
+            k.write("!DIALECTS_START\n")
+            for dialect in conlang.dialects:
+                k.write("\t-->!DIALECT:%s:%s:\n".encode("utf8") % (dialect.Name, Format4Save(dialect.description)))
+            k.write("!DIALECTS_END\n")
+
+            k.write("!CLASSES_START\n")
+            for CLASS in conlang.classes:
+                k.write("\t-->!CLASS:%s:%s:\n".encode("utf8") % (CLASS.Name, Format4Save(CLASS.description)))
+            k.write("!CLASSES_END\n")
+
+            k.write("!DICTIONARY_START\n")
+            for word in conlang.words:
+                k.write("\t-->!word:%s:%s:%s:%s:%s:%s:%s:%s:\n".encode("utf8") % (word.word, word.definition, word.pos, word.register,
+                                                                                  word.Class, word.dialect, word.source_lang, word.notes))
+            k.write("!DICTIONARY_END\n")
+
+            k.close()
+            print "Save successful!"
+            return
+    except IOError:
+        print "Error! Save data failed!"
+        return
+
+
+def load(filename):
+    """Load artificial language filename, process it and return it to the user"""
+    import os.path
+    if not os.path.isfile(filename):  # Make sure file is valid
+        print "Error! File is not valid."  # If not return back to the user
+        return
+    meta = []
+    classes = []
+    dialects = []
+    dict_ = []
+
+
+    try:
+        with open(filename, 'r') as l:
+            l_read = l.readlines()
+
+            mode = 0
+            cmode = 0
+            for v in l_read:
+                print mode
+                print cmode
+                if v.endswith("END\n"):
                     mode = 0
-                elif x.endswith("BEGIN_LIST") and x.beginswith("!#"):
-                    mode = 2
-                elif x.endswith("END_LIST") and x.beginswith("!#"):
-                    mode = 0
-
+                    cmode = 0
                 if mode == 1:
-                        x2 = x.split(":")
-                        x2.split("#")
-                        data = {x2[0],x2[1]}
-			data[str(x2[0])] = x2[1]
+                    if cmode == 1:
+                        mline = v.split(":")
+                        #print len(mline)
+                        #print mline[0]
+                        meta.append(mline[1])
+                    elif cmode == 2:
+                        dline = v.split(":")
+                        new_word = Word(dline[1], dline[2], dline[3], dline[4], dline[5], dline[6], dline[7], dline[8])
+                        dict_.append(new_word)
+                    elif cmode == 3:
+                        diline = v.split(":")
+                        new_dialect = Dialect(diline[1], diline[2])
+                        dialects.append(new_dialect)
+                    elif cmode == 4:
+                        cline = v.split(":")
+                        new_class = Class(cline[1], cline[2])
+                        classes.append(new_class)
+
+                elif v.endswith("START\n"):
+                    mode = 1
+                    if v.startswith("!METADATA"):
+                        cmode = 1
+
+                    elif v.startswith("!DICTIONARY"):
+                        cmode = 2
+
+                    elif v.startswith("!DIALECTS"):
+                        cmode = 3
+
+                    elif v.startswith("!CLASSES"):
+                        cmode = 4
 
 
-        #update values
-        self.appname = data['APPNAME']
-        self.author = data['AUTHOR']
-        self.version = data['VERSION']
-        self.language = data['LANGUAGE']
-        f.close()
-        
+        print "metadata total: %s \n" % len(meta)
+        print "dictionary total: %s \n" % len(dict_)
+        print "dialect total: %s \n" % len(dialects)
+        print "class total: %s\n" % len(classes)
+        # Assemble the conlang data
+        new_conlang = Conlang(meta[0].decode("utf8"), meta[1].decode("utf8"), meta[2].decode("utf8"), meta[3].decode("utf8"),
+                              meta[4].decode("utf8"), meta[5].decode("utf8"))
+        # Add all the assets to the conlang
+        for word in dict_:
+            word.add2list(new_conlang)
+        for dialect in dialects:
+            dialect.add2list(new_conlang)
+        for classs in classes:
+            classs.add(new_conlang)
+        return new_conlang
 
-                
-            
-        
-
-
-
-def save_data(filename, conlang, zip=True):
-    #Start with meta data
-    with open("metadata.data", "a") as f:
-        f.write("!#METADATA:BEGIN_BLOCK\n")
-        f.write("#CONLANG:%s\n" % conlang.Name)
-        f.write("#AUTHOR:%s\n"  % conlang.Author)
-        f.write("#TTYPE:%s\n" % conlang.T_Type)
-        f.write("#ATYPE:%s\n" % conlang.A_Type)
-        f.write("#LTYPE:%s\n" % conlang.L_Type)
-        f.write("!#METADATA:END_BLOCK\n")
-        f.close()
-
-    
-    with open("dictionary.data", "a") as f:
-        f.write("!#DICTIONARY:BEGIN_LIST\n")
-        for x in conlang.words:
-            #word;definition;pos;register;class;dialect;src-lang;src;notes
-            f.write("#WORD;%s;%s;%s;%s;%s;%s;%s;%s;\n" % (x.word, x.definition, x.pos, x.register, x._class, x.dialect, x.source_lang, x.notes))
-        f.write("!#DICTIONARY:END_LIST\n")
-
-        f.write("!#DIALECTS:BEGIN_LIST\n")
-        if len(conlang.dialects) != 0:
-            for x in conlang.dialects:
-                f.write("#DIALECT;%s;%s\n" % (x.Name, x.description))
-        f.write("!#DIALECTS:END_LIST\n")
-
-
-	
-        f.write("!#CLASSES:BEGIN_LIST\n")
-        if len(conlang.classes) != 0:
-            for x in conlang.classes:
-	        f.write("#CLASS;%s;%s\n" % (x.Name, x.description))
-	f.write("!#CLASS:END_LIST\n")
-        f.close()
-
-       
-	if zip == True:
-            with zipfile.ZipFile(filename, "w") as myconlang:
-                myconlang.write("metadata.data")
-                myconlang.write("dictionary.data")
-                os.remove("metadata.data")
-                os.remove("dictionary.data")
-            myconlang.close()
-
-
-def load_data(filename):
-    ZDATA = zipfile.ZipFile(filename, 'r')
-    METADATA = ZDATA.open('metadata.data', 'r')
-    DICTIONARY = ZDATA.open('dictionary.data', 'r')
-
-    mode = 0 # 1 = block mode, 2 = list mode
-    cmode = 0
-    Meta = {}
-    
-    for x in METADATA.readlines():
-        if x.endswith("BEGIN_BLOCK") and x.beginswith("!#"):
-            mode = 1
-            
-        elif x.endswith("END_BLOCK") and x.beginswith("!#"):
-            mode = 0
-        elif x.endswith("BEGIN_LIST") and x.beginswith("!#"):
-            mode = 2
-        elif x.endswith("END_LIST") and x.beginswith("!#"):
-            mode = 0
-            
-        elif mode == 1:
-            if cmode == 1:
-                x2 = x.split(":")
-                x2.split("#")
-                Meta[x2[0]] = x2[1]
-
-
-
-    C = Conlang(Meta['CONLANG'], Meta['AUTHOR'], Meta['TTYPE'], Meta['ATYPE'], Meta['LTYPE'])
-
-    for x in DICTIONARY.readlines():
-        if x.endswith("BEGIN_BLOCK") and x.beginswith("!#"):
-            mode = 1
-	    if x.startswith("!#DIALECTS"):
-	        cmode = 2
-        elif x.endswith("END_BLOCK") and x.beginswith("!#"):
-            mode = 0
-        elif x.endswith("BEGIN_LIST") and x.beginswith("!#"):
-            mode = 2
-        elif x.endswith("END_LIST") and x.beginswith("!#"):
-            mode = 0
-
-        if mode == 1:
-            x2 = x.split(";")
-            x2.split("#")
-            WORD = Word(x2[1],x2[2],x2[3],x2[4],x2[5],x2[6],x2[7],x2[8])
-            WORD.add2list(C)
-                
-            if cmode == 2: #Dialect parse mode
-                x2 = x.split(";")
-                x2.split("#")
-                DIALECT = Dialect[str(x2[1])] = x2[2]
-                DIALECT.add2list(C)
-
-
-    return C
-
-
-            
-
-        
-def wxprompt(parent=None, message='', default_value=''):
-    dialog = wx.TextEntryDialog(parent, message, defaultValue=default_value)
-    dialog.ShowModal()
-    result = dialog.GetValue()
-    dialog.Destroy()
-
-
+    except IOError:
+        print "Error! Failed to load data from %s" % filename
+        return
+# def wxprompt(parent=None, message='', default_value=''):
+    # dialog = wx.TextEntryDialog(parent, message, defaultValue=default_value)
+    # dialog.ShowModal()
+    # result = dialog.GetValue()
+    # dialog.Destroy()
