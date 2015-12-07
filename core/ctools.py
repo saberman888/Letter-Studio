@@ -20,13 +20,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-
-import wx
-import cio
-
-
-#Ctools.py
-
+import os
 
 def delete_word(word):
     del word
@@ -41,7 +35,7 @@ def delete_dialects(conlang, mode):
 
     else:
         if mode == 0:
-            wx.MessageBox(lang['NO_DIALECTS_DELETE'], wx.OK)
+            print "There are no dialects to be deleted."
         return 0
 
 
@@ -54,18 +48,28 @@ def delete_words(conlang, mode):
 
     else:
         if mode == 0:
-            wx.MessageBox(lang['NO_WORDS_DELETE'], wx.OK)
+            print "There are no words to be deleted."
         return 0
 
 def dump_conlang(conlang):
     delete_dialects(conlang, 1)
     delete_words(conlang, 1)
     del conlang
-    wx.MessageBox(lang['CONLANG_DELETED'], wx.OK)
-    
-    
+    print "Conlang terminated. Press enter to exit program"
+    p = raw_input()
+    os._exit(0)
+
+
 def edit(item):
     prev = item
-    new = wxprompt(None, lang['EDIT'], prev)
-    return new
+    i = raw_input()
+    return (i, prev)
 
+def Format4Save(description):
+    return description.replace('\n', '__N__')
+def Format4Load(description):
+    return description.replace('__N__', '\n')
+def GetDesc(C):
+    return C.description
+def GetName(C):
+    return C.Name
