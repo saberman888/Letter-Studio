@@ -19,15 +19,19 @@
 #LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-class Class():
-    def __init__(self, Name, description):
-	self.Name = Name
-	self.description = description
 
-    def Add(self, c):
+
+class Class:
+    """Class for Genders"""
+    def __init__(self, Name, description):
+	    self.Name = Name
+	    self.description = description
+
+    def add(self, c):
         c.classes.append(self)
 
-class Conlang():
+class Conlang:
+    """Class for conlangs"""
     def __init__(self, Name, Author, Family, T_Type, A_Type, L_Type):
         self.Name = Name
         self.Author = Author
@@ -40,7 +44,8 @@ class Conlang():
         self.words = []
 
 
-class Dialect():
+class Dialect:
+    """Class for dialects"""
     def __init__(self, Name, description):
         self.Name = Name
         self.description = description
@@ -48,18 +53,39 @@ class Dialect():
     def add2list(self, conlang):
         conlang.dialects.append(self)
 
-        
+
+
 class Word():
-    def __init__(self, word, definition,pos, register, _class, dialect, source_lang, notes):
-        
+    """Class for words"""
+    def __init__(self, word, definition,pos, register, Class, dialect, source_lang, notes):
+
         self.word = word
         self.definition = definition
         self.pos = pos
         self.register = register
-        self._class = _class
+        self.Class = Class
         self.dialect = dialect
         self.source_lang = source_lang
         self.notes = notes
 
     def add2list(self, conlang):
         conlang.words.append(self)
+
+Parts_Of_Speech = {
+    'NORMAL/NONE':0,
+    'Abbreviation':1,
+    'Adjective':2,
+    'Adposition':3,
+    'Adverb':4,
+    'Affix':5,
+    'Auxillary':6,
+    'Conjunction':7,
+    'Determiner':8,
+    'Interjection':9,
+    'Noun':10,
+    'Numeral':11,
+    'Phrase':12,
+    'Pronoun':13,
+    'Proper Noun':14,
+    'Verb':15
+}
