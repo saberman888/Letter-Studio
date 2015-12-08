@@ -51,8 +51,9 @@ def save(filename, conlang):
 
             k.write("!DICTIONARY_START\n")
             for word in conlang.words:
-                k.write("\t-->!word:%s:%s:%s:%s:%s:%s:%s:%s:\n".encode("utf8") % (word.word, word.definition, word.pos, word.register,
-                                                                                  word.Class, word.dialect, word.source_lang, word.notes))
+                k.write("\t-->!word:%s:%s:%s:%s:%s:%s:%s:%s:\n".encode("utf8") % (
+                    word.word, word.definition, word.pos, word.register,
+                    word.Class, word.dialect, word.source_lang, word.notes))
             k.write("!DICTIONARY_END\n")
 
             k.close()
@@ -74,7 +75,6 @@ def load(filename):
     dialects = []
     dict_ = []
 
-
     try:
         with open(filename, 'r') as l:
             l_read = l.readlines()
@@ -82,16 +82,14 @@ def load(filename):
             mode = 0
             cmode = 0
             for v in l_read:
-                print mode
-                print cmode
                 if v.endswith("END\n"):
                     mode = 0
                     cmode = 0
                 if mode == 1:
                     if cmode == 1:
                         mline = v.split(":")
-                        #print len(mline)
-                        #print mline[0]
+                        # print len(mline)
+                        # print mline[0]
                         meta.append(mline[1])
                     elif cmode == 2:
                         dline = v.split(":")
@@ -120,13 +118,13 @@ def load(filename):
                     elif v.startswith("!CLASSES"):
                         cmode = 4
 
-
         print "metadata total: %s \n" % len(meta)
         print "dictionary total: %s \n" % len(dict_)
         print "dialect total: %s \n" % len(dialects)
         print "class total: %s\n" % len(classes)
         # Assemble the conlang data
-        new_conlang = Conlang(meta[0].decode("utf8"), meta[1].decode("utf8"), meta[2].decode("utf8"), meta[3].decode("utf8"),
+        new_conlang = Conlang(meta[0].decode("utf8"), meta[1].decode("utf8"), meta[2].decode("utf8"),
+                              meta[3].decode("utf8"),
                               meta[4].decode("utf8"), meta[5].decode("utf8"))
         # Add all the assets to the conlang
         for word in dict_:
@@ -140,8 +138,3 @@ def load(filename):
     except IOError:
         print "Error! Failed to load data from %s" % filename
         return
-# def wxprompt(parent=None, message='', default_value=''):
-    # dialog = wx.TextEntryDialog(parent, message, defaultValue=default_value)
-    # dialog.ShowModal()
-    # result = dialog.GetValue()
-    # dialog.Destroy()
