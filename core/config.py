@@ -1,3 +1,5 @@
+
+
 # The MIT License (MIT)
 #
 # Copyright (c) 2015 saberman888
@@ -31,17 +33,36 @@ PerminantCFG = {
 }
 
 
-def GetConfiguration():
+def GetConfiguration(dir):
+  
     try:
-        _ = __file__[:51]+"/data/config.cfg"
+        _ = dir+"/core/data/config.cfg"
     except IOError:
         import os
-        print "Error! Unable to load Configuration."
+        print "Error! Unable to find Configuration file! Error code 11-22"
         i = raw_input()
         os._exit(0)
 
-    with open(_) as f:
-        for line in f.readlines():
-            linez = line.split("=")
-            Configuration[linez[0]] = linez[1]
-    f.close()
+    try:
+        with open(_) as f:
+            for line in f.readlines():
+                linez = line.split("=")
+                Configuration[linez[0]] = linez[1]
+        f.close()
+    except IOError:
+        import os
+        print "Error! Unable to load Configuration! ErrorCode: 11"
+	print dir, " is not a valid directory."
+        i = raw_input()
+        os._exit(0)
+
+def Update(e, v):
+	Configuration[e] = v
+
+
+def UpdateSettings(dir):
+	dir = dir+"/core/data/config.cfg"
+	for x, y in Configuration:
+		for x in Configuration:
+			f.write(x+"="+y)
+	f.close()
