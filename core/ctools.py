@@ -22,6 +22,9 @@
 
 import os
 
+def getchar():
+	return raw_input()
+	
 def delete_word(word):
     del word
 
