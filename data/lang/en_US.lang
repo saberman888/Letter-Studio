@@ -1,0 +1,13 @@
+name=English
+Translation_by=Saberman
+ND2BDeleted=There are no dialects to be deleted.
+NW2BDeleted=There are no words to be deleted.
+clangTerminated=Conlang terminated. Press enter to exit the program.
+SaveFailed=Error! Failed to save data!
+SaveSucc=Save data sucessful!
+FileNotValid=Error! File is not valid!
+Failed2Load=Error! Failed to load file from
+MetaTotal=meta total
+DictTotal=dictionary total
+DiaTotal=dialect total
+ClassTotal=class total
