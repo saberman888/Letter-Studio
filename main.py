@@ -19,42 +19,46 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#Main function
-import os
+#Import core files
+from core.cio import *
+from core.conassets import *
+from core.ctools import *
 from core.language import *
 from core.config import *
-from core.cio import *
-from core.ctools import *
-from core.conassets import *
+import os, sys
+
 REALPATH = os.path.realpath(__file__)[:len(os.path.realpath(__file__))-len(__file__)]
-#Realpath is a nice var
-DIRECTORIES = {
-	'LANG':REALPATH+"/core/lang",
-	'DATA':REALPATH+"/core/data"
+Setup = True
+Update = False
+directories = {
+	'lang':REALPATH+'/data/lang',
+	'data':REALPATH+'/data/'
 }
 
-def main():
-	#Check if language and data folders exist
-	if os.path.isdir(REALPATH) == False:
-		print "Error! Failed to establish REALPATH."
-		getchar()
+#Import Gui stuff
+try:
+	import wx
+except ImportError:
+	with open("Error.txt", 'w') as e:
+		e.write("Error! The wx module was not found!")
+		e.close()
 		os._exit()
-	elif os.path.isdir(DIRECTORIES['LANG']) == False:
-		print "Error! /core/lang/ doesn't exist!"
-		getchar()
-		os._exit()
-	elif os.path.isdir(DIRECTORIES['DATA']) == False:
-		print "Error! /core/data doesn't exist!"
-		getchar()
-		os._exit()
-	
-	GetConfiguration(REALPATH) #Load configuration of the program
-	print PerminantCFG['NAME']
-	print "Created by: ",PerminantCFG['AUTHOR']
-	print "Version: ",PerminantCFG['Version']
-	print "License: ",PerminantCFG['License']
-	load_language(Configuration['langdir'])
-	
-	
-main()
 
+from core.wx.alert import *
+from core.wx.setup import *
+from core.wx.mainwindow import *
+A = wx.App()
+if os.path.isfile(directories['data']+"config.cfg"):
+	Setup = False
+elif not os.path.isdir(directories['data']):
+	mkdir(directories['data'])
+	Setup = True
+elif not os.path.isdir(directories['lang']):
+	Warn("Warning!","/data/lang/ didn't exist, creating...")
+	mkdir(directories['lang'])
+	Setup = True
+
+S = Setup(None, "Letter Studio v1.00 Setup")
+#W = MainWindow(None, "Letter Studio v1.00")
+
+A.MainLoop()
