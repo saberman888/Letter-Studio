@@ -21,11 +21,35 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
+
+# The MIT License (MIT)
+#
+# Copyright (c) 2015 saberman888
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+from wx.alert import *
+
 Configuration = {
 
 }
 
-PerminantCFG = {
+PermanintCFG = {
     "NAME": "QuickLang",
     "AUTHOR": "Andres O. Vazquez",
     "Version": "1.0.0",
@@ -39,7 +63,7 @@ def GetConfiguration(dir):
         _ = dir+"/core/data/config.cfg"
     except IOError:
         import os
-        print "Error! Unable to find Configuration file! Error code 11-22"
+        Panic("Error! Unable to find Configuration file!")
         i = raw_input()
         os._exit(0)
 
@@ -51,8 +75,8 @@ def GetConfiguration(dir):
         f.close()
     except IOError:
         import os
-        print "Error! Unable to load Configuration! ErrorCode: 11"
-	print dir, " is not a valid directory."
+        Panic("Error! Unable to load Configuration!")
+	Panic("%s is not a valid directory." % dir)
         i = raw_input()
         os._exit(0)
 
@@ -61,7 +85,7 @@ def Update(e, v):
 
 
 def UpdateSettings(dir):
-	dir = dir+"/core/data/config.cfg"
+	dir = dir+"/data/config.cfg"
 	for x, y in Configuration:
 		for x in Configuration:
 			f.write(x+"="+y)
