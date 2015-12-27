@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+from config import *
+from wx.alert import *
 Dictionary = {
 
 }
@@ -34,3 +36,26 @@ def load_language(configurate_file_name):
             linez = line.split("=")
             Dictionary[linez[0]] = linez[1]
     cfl.close()
+
+
+def ChoseLang(REALDIR):
+    REALDIR = REALDIR+"/core/lang/"
+    import os
+    for x in os.listdir(REALDIR):
+        print x
+        i = raw_input()
+        for x in os.listdir(REALDIR):
+            if i == x:
+                Show("Please restart for it to take effect.")
+                Update('langdir', REALDIR+x)
+                UpdateSettings(REALDIR)
+                i = raw_input()
+                os._exit()
+
+def listLanguages(REALDIR):
+	REALDIR = REALDIR+"/core/lang/"
+	import os
+	for x in os.listdir(REALDIR):
+		if x.endswith(".lang"):
+			print x[:len(x)-5]
+	
