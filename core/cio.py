@@ -20,6 +20,29 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# The MIT License (MIT)
+#
+# Copyright (c) 2015 saberman888
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+from wx.alert import *
 from conassets import *
 from ctools import *
 
@@ -57,10 +80,11 @@ def save(filename, conlang):
             k.write("!DICTIONARY_END\n")
 
             k.close()
-            print "Save successful!"
-            return
+
+        Show("Save successful!")
+        return
     except IOError:
-        print "Error! Save data failed!"
+        Panic("Error! Save data failed!")
         return
 
 
@@ -68,7 +92,7 @@ def load(filename):
     """Load artificial language filename, process it and return it to the user"""
     import os.path
     if not os.path.isfile(filename):  # Make sure file is valid
-        print "Error! File is not valid."  # If not return back to the user
+        Panic("Error! File is not valid.")  # If not return back to the user
         return
     meta = []
     classes = []
@@ -118,10 +142,10 @@ def load(filename):
                     elif v.startswith("!CLASSES"):
                         cmode = 4
 
-        print "metadata total: %s \n" % len(meta)
-        print "dictionary total: %s \n" % len(dict_)
-        print "dialect total: %s \n" % len(dialects)
-        print "class total: %s\n" % len(classes)
+        #print "metadata total: %s \n" % len(meta)
+        #print "dictionary total: %s \n" % len(dict_)
+        #print "dialect total: %s \n" % len(dialects)
+        #print "class total: %s\n" % len(classes)
         # Assemble the conlang data
         new_conlang = Conlang(meta[0].decode("utf8"), meta[1].decode("utf8"), meta[2].decode("utf8"),
                               meta[3].decode("utf8"),
@@ -136,5 +160,5 @@ def load(filename):
         return new_conlang
 
     except IOError:
-        print "Error! Failed to load data from %s" % filename
+        Panic("Error! Failed to load data from %s" % filename)
         return
