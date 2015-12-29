@@ -34,7 +34,7 @@ def load_language(configurate_file_name):
     with open(configurate_file_name, 'r') as cfl:
         for line in cfl.readlines():
             linez = line.split("=")
-            Dictionary[linez[0]] = unicode(u'%s' % linez[1])
+            Dictionary[linez[0].decode("utf16")] = linez[1].decode("utf16"))
     cfl.close()
 
 
