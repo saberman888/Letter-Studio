@@ -27,8 +27,8 @@ from language import *
 from wx.alert import *
 
 
-def getchar():
-	return raw_input()
+def getchar(i=""):
+	return raw_input(i)
 
 def delete_word(word):
     """Deletes a word"""
