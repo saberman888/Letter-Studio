@@ -20,9 +20,39 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import wx
-
+from core.ctools import *
+from core.wx.frames import *
 class MainWindow(wx.Frame):
 	def __init__(self, parent, title):
-		super(MainWindow, self).__init__(parent, title=title, size=(800,600))
+		super(MainWindow, self).__init__(parent, title=title, size=(900,600))
+		panel = wx.Panel(self)
+		nb = wx.Notebook(panel)
 
-		self.Show()
+                #Load MenuBar
+		menubar = wx.MenuBar()
+		fm = wx.Menu() #Filemenu
+		fm.Append(wx.ID_NEW, "&New")
+		fm.Append(wx.ID_OPEN, "&Open")
+		fm.Append(wx.ID_SAVE, "&Save")
+		fm.Append(wx.ID_SAVE, "&Save As..")
+		fm.Append(wx.ID_EXIT, "&Quit Letter Studio")
+		#fm.AppendSeparator()
+
+		menubar.Append(fm, "&File")
+		self.SetMenuBar(menubar)
+
+                #Load Tabs
+		cp = ConlangPage(nb)
+		dp = DialectPage(nb)
+		dip = DictionaryPage(nb)
+
+		nb.AddPage(cp, "Conlang")
+		nb.AddPage(dp, "Dialects")
+		nb.AddPage(dip, "Dictionary")
+
+		sizer = wx.BoxSizer()
+		sizer.Add(nb, 2, wx.EXPAND)
+		panel.SetSizer(sizer)
+		self.Centre()
+		self.Show(True)
+
