@@ -23,21 +23,27 @@
 from wx.alert import *
 from conassets import *
 from ctools import *
+import pickle
+
+
+def serialize(filename, conlang):
+    """Saves conlang using pickle to a file - parameters filename and conlang"""
+    dumped_conlang = pickle.dump(conlang, filename)
 
 
 def save(filename, conlang):
-    """Saves constructed language data, parameters - filename and """
+    """Saves constructed language data in a text based dump, parameters - filename and conlang"""
     try:
         # Write all artifical language data into its file
         with open(filename, 'w') as k:
             # Start with language's metadata
             k.write("!METADATA_START\n")
-            k.write("\t-->!CONLANG:%s:\n".encode("utf16") % conlang.Name.encode("utf16"))
-            k.write("\t-->!AUTHOR:%s:\n".encode("utf16") % conlang.Author.encode("utf16")
-            k.write("\t-->!AUTHOR:%s:\n".encode("utf16") % conlang.Family.encode("utf16"))
-            k.write("\t-->!Typology:%s:\n".encode("utf16") % conlang.T_Type.encode("utf16"))
-            k.write("\t-->!Alignment:%s:\n".encode("utf16") % conlang.A_Type.encode("utf16"))
-            k.write("\t-->!Language-Type:%s:\n".encode("utf16") % conlang.L_Type.encode("utf16"))
+            k.write("\t-->!CONLANG:%s:\n".encode("utf16") % conlang.Name)
+            k.write("\t-->!AUTHOR:%s:\n".encode("utf16") % conlang.Author)
+            k.write("\t-->!AUTHOR:%s:\n".encode("utf16") % conlang.Family)
+            k.write("\t-->!Typology:%s:\n".encode("utf16") % conlang.T_Type)
+            k.write("\t-->!Alignment:%s:\n".encode("utf16") % conlang.A_Type)
+            k.write("\t-->!Language-Type:%s:\n".encode("utf16") % conlang.L_Type)
             k.write("!METADATA_END\n")
 
             k.write("!DIALECTS_START\n")
