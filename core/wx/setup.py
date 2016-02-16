@@ -21,8 +21,18 @@
 
 import wx
 
+class SetupWindow(wx.Frame):
+    def __init__(self, parent, title):
+        super(SetupWindow, self).__init__(parent, title=title, size=(400,300))
+        panel = wx.Panel(self)
 
-class Setup(wx.Frame):
-	def __init__(self, parent, title):
-		super(Setup, self).__init__(parent, title, size=(300,300))
-		self.Show(True)
+        OK = wx.Button(panel, label="Save Settings", pos=(300,150))
+        OK.Bind(wx.EVT_BUTTON, self.Save)
+        
+        self.Show(True)
+
+    def Save(self, e):
+        pass
+A = wx.App()
+S = SetupWindow(None, "Letter Studio Setup")
+A.MainLoop()
